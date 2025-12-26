@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<!-- Colors: #000000, #cc0000 -->
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Song Sushi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="">
+    <style>
+        body {
+            background-color: #fdfdfd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        div.content {
+            background-color: hsl(0,0%,95%);
+            margin: auto;
+            width: 90%;
+            transition: 0.5s;
+            max-width: 1200px;
+            padding: 2%;
+            font-size: 16px;
+            font-family: Roboto, Geneva, sans-serif;
+        }
+        /* All the buttons */
+        #tabContainer {
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 2%;
+        }
+
+        button, a {
+            background-color: #dddddd;
+            text-align: center;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 2% 2%;
+            font-family: Sans-serif;
+            font-size: 17px;
+            width: calc(100%/3);
+            border-radius: 10px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        a {
+            background-color: rgb(237, 28, 36);
+            padding: 4%;
+            margin: 1%;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* Change background color of buttons on hover */
+        button:hover, a:hover {
+            background-color: #bbbbbb;
+        }
+
+        /* Create an active/current tablink class */
+        button.active, a:active {
+            background-color: rgb(237, 28, 36);
+        }
+        header {
+            display: flex;
+        }
+        #meta_info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        /* Slideshow window */
+        .slideshowWindow {
+            max-width: 100%;
+            position: relative;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the images by default */
+        .newFoodSlide {
+            display: none;
+            border-radius: 10px;
+
+            -webkit-animation-name: fade;
+            -webkit-animation-duration: 1.5s;
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        /* Next & previous buttons */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin: -22px 0 0 0;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            text-shadow: 2px 2px 4px #000000;
+            background-color:  rgba(0,0,0,0.1);
+        }
+
+        /* Position the "next button" to the right */
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        /* On hover, add a black background color with a little bit see-through */
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        /* The dots/bullets/indicators */
+        #dotContainer {
+            padding: 2%;
+        }
+        .dot {
+            cursor: pointer;
+            height: 15px;
+            width: 15px;
+            margin: 0 2px;
+            background-color: #bbbbbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+
+        .active, .dot:hover {
+            background-color: #666666;
+        }
+
+        .tabcontent {
+            display: none;
+            overflow: auto;
+        }
+
+        #opening_hours, iframe {
+            float: left;
+            background-color: hsl(0,0%,100%);
+            border-collapse: collapse ;
+            width: 48%;
+            border-radius: 10px;
+            margin: 1%;
+            min-height: 400px;
+        }
+        table {
+            float: none;
+            background-color: hsl(0,0%,100%);
+            border-collapse: collapse;
+            width: 100%;
+            border-radius: 10px;
+            min-height: 400px;
+            margin: 1% 0;
+        }
+        td, th{
+            padding: 1%;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        td.number {
+            padding-right: 10px;
+        }
+
+        td.description {
+            font-weight: normal;
+        }
+
+        td.price {
+            padding-right: 10px;
+        }
+
+        tr:nth-child(even) {
+            background-color: hsl(0,0%,90%);
+        }
+
+
+        #opening_hours td {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .table_title {
+            font-size: 30px;
+            text-align: center;
+        }
+
+        @media only screen and (max-width: 1200px) {
+            #opening_hours, iframe {
+                width: 100%;
+                margin: 0;
+            }
+        }
+
+        @media only screen and (max-width: 1000px) {
+            #tabContainer {
+                flex-wrap: wrap;
+            }
+            button {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+        }
+        @media only screen and (max-width: 700px){
+            body {
+                background-color: white;
+            }
+            div.content {
+                width: 100%;
+                padding: 0;
+                font-size: 12px;
+            }
+        }
+    </style>
+    <script>
+        function openTab(evt, tabName, firstTime) {
+            var i, tabcontent, tablinks;
+            /*if ( firstTime === undefined ) {
+                firstTime = 0; // default value
+            }*/
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+
+            if (firstTime !== undefined) {
+                document.getElementById(String(firstTime)).className += " active";
+            }else {
+                evt.currentTarget.className += " active";
+            }
+        }
+
+        var slideIndex = 1;
+        showSlides(slideIndex);
+
+        // Next/previous controls
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        // Thumbnail image controls
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+            var i;
+            var slides = document.getElementsByClassName("newFoodSlide");
+            var dots = document.getElementsByClassName("dot");
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            if (slides[slideIndex-1]) {
+				slides[slideIndex-1].style.display = "block";
+			}
+			if (dots[slideIndex-1]) {
+				dots[slideIndex-1].className += " active";
+			}
+        }
+
+        function weekDay() {
+            let currentDay = new Date().getDay();
+
+            if (currentDay === 1 || currentDay === 6) {
+                document.getElementById("openTodayButton").textContent = " Öppet idag: 11:00-20:00*"
+            }
+            else {
+                document.getElementById("openTodayButton").textContent = " Öppet idag: 11:00-20:00*"
+            }
+        }
+    </script>
+</head>
+
+<body onload="showSlides();openTab(event, 'Middagsmeny', 'MiddagsmenyKnapp');weekDay()">
+<div class="content">
+    <header>
+        <img src="logo.png" style="width: 50%; height: 50%; border-radius: 10px;">
+        <div class="buttonContainer" id="meta_info">
+            <a class="far fa-calendar-check" id="openTodayButton" href="#InfoKnapp" onclick="openTab(event, 'Info', 'InfoKnapp')" style="font-weight: bold;">
+                Öppet idag: Klicka här
+            </a>
+            <a class="far fa-compass" href="https://maps.app.goo.gl/SoWZ1KMWVBgiv41V7" target="_blank" id="address" style="font-weight: bold;">
+                Ringvägen 115 118 60 Stockholm
+            </a>
+            <a class="fas fa-phone" href="tel:08-658 22 22" id="telephone_number" style="font-weight: bold;">
+                08-658 22 22
+            </a>
+        </div>
+    </header>
+    <div class="slideshow-container">
+        <div class="slideshowWindow">
+            <img class="newFoodSlide" src="matbilder/SongSushi-1.jpg" style="width:100%">
+            <img class="newFoodSlide" src="matbilder/SongSushi-2.jpg" style="width:100%">
+            <img class="newFoodSlide" src="matbilder/SongSushi-3.jpg" style="width:100%">
+            <img class="newFoodSlide" src="matbilder/SongSushi-4.jpg" style="width:100%">
+            <img class="newFoodSlide" src="matbilder/SongSushi-5.jpg" style="width:100%">
+            <!-- Next and previous buttons -->
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        </div>
+        <div id="dotContainer" style="text-align:center">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide(5)"></span>
+        </div>
+    </div>
+    <div class="buttonContainer" id="tabContainer">
+        <!--<button class="tablinks" id="LunchmenyKnapp" onclick="openTab(event, 'Lunchmeny')">Lunchmeny</button>-->
+        <button class="tablinks" id="MiddagsmenyKnapp" onclick="openTab(event, 'Middagsmeny')">Meny</button>
+        <button class="tablinks" id="InfoKnapp" onclick="openTab(event, 'Info')">Öppettider & Kontakt</button>
+    </div>
+
+    <div id="Lunchmeny" class="tabcontent">
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Sushi</td>
+            </tr>
+
+            <tr>
+                <td class="number">L1</td>
+                <td class="name">Liten Sushi</td>
+                <td class="description">8 bitar: 3 Lax, 1 Räka, 1 Avokado, 3 Maki Roll.</td>
+                <td class="price">89Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L2</td>
+                <td class="name">Mellan Sushi</td>
+                <td class="description">10 bitar: 3 lax, 1 Räka, 1 Tonfisk, 1 Avokado, 4 Maki Roll</td>
+                <td class="price">115Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L3</td>
+                <td class="name">Stor Sushi</td>
+                <td class="description">12 bitar: 4 Lax, 2 Räkor, 1 Tonfisk, 1 Avokado, 4 Maki Roll</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L4</td>
+                <td class="name">X-Stor sushi</td>
+                <td class="description">15 bitar: 4 Lax, 3 Räkor, 2 Tonfisk, 2 Avokado, 4 Maki Roll </td>
+                <td class="price">170Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L5</td>
+                <td class="name">Lax Sushi</td>
+                <td class="description">8 bitar: 8 Lax eller 4 Lax & 4 Räkor</td>
+                <td class="price">120Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">140Kr</td>
+            </tr>
+            
+            <tr>
+                <td class="number">L6</td>
+                <td class="name">Grillad Lax Sushi</td>
+                <td class="description">8 Grillad Lax med Majonnäs/Chilimajonnäs</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">145Kr</td>
+            </tr>
+          
+            <tr>
+                <td class="number">L7</td>
+                <td class="name">Lax och Avokado</td>
+                <td class="description">8 bitar: 4 Lax & 4 Avokado</td>
+                <td class="price">120Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">140Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L8</td>
+                <td class="name">Lax Scampi</td>
+                <td class="description">12 bitar: 4 Lax, 4 Räkor, 4 Maki Roll</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L9</td>
+                <td class="name">Vegetarisk Sushi</td>
+                <td class="description">10 bitar: 3 Avokado, 2 Tofukuddar, 2 Omelett, 3 Vegetarisk Roll</td>
+                <td class="price">110Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">130Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L10</td>
+                <td class="name">Mamma Sushi</td>
+                <td class="description">10 bitar: 2 Räkor, 2 Surimi, 2 Tofukuddar, 2 Omelett, 2 Avokado</td>
+                <td class="price">115Kr</td>
+            </tr>
+            
+        </table>
+
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Rolls</td>
+            </tr>
+            <tr>
+                <td class="number">L20</td>
+                <td class="name">Maki Roll</td>
+                <td class="description">Rulle i 10 bitar med: Lax, Avokado, Gurka, Surimi<br>Topping: Sesamfrön, Rostad lök, Majonnäs/Chilimajonnäs</td>
+                <td class="price">115Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L21</td>
+                <td class="name">California Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, Gurka, Surimi, Majonnäs/Chilimajonnäs, Philadelphiaost<br>Topping: Sesamfrön, Majonnäs/Chilimajonnäs</td>
+                <td class="price">115Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L22</td>
+                <td class="name">Vegetarisk Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, Gurka, Rödpaprika<br>Topping: Sesmfrön, Rostad lök, Majonnäs/Chilimajonnäs</td>
+                <td class="price">115Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L23</td>
+                <td class="name">Yakiniku Roll</td>
+                <td class="description">Rulle i 10 bitar med: Yakiniku, Gurka, Sesamfrön</td>
+                <td class="price">120Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L24</td>
+                <td class="name">Lax Roll</td>
+                <td class="description">Rulle i 10 bitar med: Lax, Avokado, Gurka, Surimi<br>Topping: Rå lax, Sesamfrön, Majonnäs/Chilimajonnäs</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L25</td>
+                <td class="name">Grillad Lax Roll</td>
+                <td class="description">Rulle i 10 bitar med: Lax, Avokado, Gurka, Surimi<br>Toppping: Grillad lax, Rostad lök, Sesamfrön, Majonnäs/Chilimajonnäs</td>
+                <td class="price">140Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L26</td>
+                <td class="name">Grillad Tonfisk Roll</td>
+                <td class="description">Rulle i 10 bitar med: Lax, Avokado, Gurka, Surimi<br>Topping: Grillad tonfisk, Rostad lök, Sesamfrön, Majonnäs/Chilimajonnäs</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L27</td>
+                <td class="name">Tempura Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, Tempura räkor<Br>Topping: Rostad lök, Majonnäs/Chilimajonnäs</td>
+                <td class="price">130Kr</td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Varmrätter</td>
+            </tr>
+            <tr>
+                <td class="number">L30</td>
+                <td class="name">Yakiniku</td>
+                <td class="description">Skivad biff med lök i sojasås, ris & sallad</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L31</td>
+                <td class="name">Yakitori Spett</td>
+                <td class="description">6 grillade hycklingsspett i sojasås, ris & sallad</td>
+                <td class="price">130Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L32</td>
+                <td class="name">Sushi Yakiniku</td>
+                <td class="description">2 Lax & 2 Maki Roll, Skivad biff med lök i sojasås, ris & sallad</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L33</td>
+                <td class="name">Sushi Yakitori Spett</td>
+                <td class="description">2 Lax & 2 Maki Roll, 4 grillade kycklingspett i sojasås, ris & sallad</td>
+                <td class="price">130Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L34</td>
+                <td class="name">Bento</td>
+                <td class="description">Yakiniku, 2 grillade kycklingspett, 2 Lax, 2 Maki Roll, ris & sallad</td>
+                <td class="price">140Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L35</td>
+                <td class="name">Bibimbap Lax/Tonfisk</td>
+                <td class="description"> Kimchi, stekt ägg, olika grönsaker, stark gochujangsås</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L36</td>
+                <td class="name">Bibimbap Biff/Kyckling/Vegetarisk</td>
+                <td class="description"> Kimchi, stekt ägg, olika grönsaker, stark gochujangsås </td>
+                <td class="price">130kr</td>
+            </tr>
+             <tr>
+                <td class="number">L38</td>
+                <td class="name">Vårrullar</td>
+                <td class="description"> 10st friterade vegetariska vårrullar med ris och sweet chili sås</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number">L39</td>
+                <td class="name">Poké Bowl</td>
+                <td class="description">Lax/Räkor/Tonfisk/Kyckling/Tofu, med Salladsblandning, Kålblandning, Avokado, Edamame, Inlagd Ingefära och Mango. Serverad på en bädd av ris. Toppad med Sesamfrön, Masago, Chilimajonnäs/Majonäs </td>
+                <td class="price">135kr</td>
+            </tr>
+        
+        </table>
+
+    </div>
+
+    <div id="Middagsmeny" class="tabcontent">
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Kockens val</td>
+            </tr>
+
+            <tr>
+                <td class="number">1</td>
+                <td class="name">8 bitar</td>
+                <td class="description">5 nigiri, 3 maki</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number">2</td>
+                <td class="name">10 bitar</td>
+                <td class="description">6 nigiri, 4 maki</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number">3</td>
+                <td class="name">12 bitar</td>
+                <td class="description">8 nigiri, 4 maki</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">4</td>
+                <td class="name">15 bitar</td>
+                <td class="description">9 nigiri, 6 maki</td>
+                <td class="price">195Kr</td>
+            </tr>
+            <tr>
+                <td class="number">5</td>
+                <td class="name">18 bitar</td>
+                <td class="description">12 nigiri, 6 maki</td>
+                <td class="price">235Kr</td>
+            </tr>
+             <tr>
+                <td class="number">6</td>
+                <td class="name">30 bitar</td>
+                <td class="description">20 nigiri, 10 maki</td>
+                <td class="price">395Kr</td>
+            </tr>
+            <tr>
+                <td class="table_title" colspan="4">Nigiri</td>
+            </tr>
+            <tr>
+                <td class="number">7</td>
+                <td class="name">Blandad fisk nigiri</td>
+                <td class="description">8 bitar</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">195Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">235Kr</td>
+            </tr>
+            <tr>
+                <td class="number">8</td>
+                <td class="name">Lax nigiri</td>
+                <td class="description">8 bitar</td>
+                <td class="price">140Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">160Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">190Kr</td>
+            </tr>
+             <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">230Kr</td>
+            </tr>
+            <tr>
+                <td class="number">9</td>
+                <td class="name">Halstrad lax nigiri</td>
+                <td class="description">8 bitar</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">195Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">235Kr</td>
+            </tr>
+            <tr>
+                <td class="number">10</td>
+                <td class="name">Lax och avokado nigiri</td>
+                <td class="description">8 bitar</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">155Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">185Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">225Kr</td>
+            </tr>
+            <tr>
+                <td class="number">11</td>
+                <td class="name">Avokado nigiri</td>
+                <td class="description">8 bitar</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">155Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">185Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">225Kr</td>
+            </tr>
+            <tr>
+                <td class="number">12</td>
+                <td class="name">Mamma nigiri</td>
+                <td class="description">8 bitar: räka, tofu, omelett, avokado, crabstick</td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">155Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">185Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">225Kr</td>
+            </tr>
+            <tr>
+                <td class="table_title" colspan="4">Vegetarisk</td>
+            </tr>
+            <tr>
+                <td class="number">13</td>
+                <td class="name">Vegetarisk sushi</td>
+                <td class="description">8 bitar: avokado, tofu, omelett, maki</td>
+                <td class="price">125Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">10 bitar</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">15 bitar</td>
+                <td class="price">195Kr</td>
+            <tr>
+                <td class="number">14</td>
+                <td class="name">Vegetarisk roll</td>
+                <td class="description">10 bitar: avokado, tofu, gurka. Topping: Sesamfrön, rostad lök, chilimajo</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number">15</td>
+                <td class="name">Mango avokado roll</td>
+                <td class="description">10 bitar: mango, avokado, gurka, rostadlök. Topping: avokado, sesamfrön, mangosås</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="table_title" colspan="4">Sashimi</td>
+            </tr>
+            <tr>
+                <td class="number">16</td>
+                <td class="name"></td>
+                <td class="description">12 bitar</td>
+                <td class="price">175Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">16 bitar</td>
+                <td class="price">225Kr</td>
+            </tr>
+            <tr>
+                <td class="number"></td>
+                <td class="name"></td>
+                <td class="description">22 bitar</td>
+                <td class="price">295Kr</td>
+            </tr>
+        </table>
+        
+
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Maki rolls</td>
+            </tr>
+            <tr>
+                <td class="number">20</td>
+                <td class="name">Futomaki Roll</td>
+                <td class="description">Rulle i 10 bitar med: Lax, avokado, gurka, surimi<br>Topping: sesamfrön, rostad lök, majo/chilimajo</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number">21</td>
+                <td class="name">California Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, gurka, surimi, majo/chilimajo<br>Topping: sesamfrön, majo/chilimajo</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number">22</td>
+                <td class="name">Yakiniku/yakitori Roll</td>
+                <td class="description">Rulle i 10 bitar med: Nötkött/kyckling, avokado, gurka, surimi<br>Topping: sesamfrön, rostad lök, salladslök, teriyakisås, chilimajo</td>
+                <td class="price">155Kr</td>
+            </tr>
+            <tr>
+                <td class="number">23</td>
+                <td class="name">Scampi Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, gurka, surimi<br>Topping: räkor, sesamfrön, masago, teriyakisås, majo/chilimaj0</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">24</td>
+                <td class="name">Lax Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, gurka, surimi<br>Topping: lax, sesamfrön, majo/chilimajo</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">25</td>
+                <td class="name">Halstrad Lax Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, gurka, surimi<br>Toppping: halstrad lax, sesamfrön, rostad lök, salladslök, teriyakisås, chilimajo, tryffelmajo</td>
+                <td class="price">170Kr</td>
+            </tr>
+            <tr>
+                <td class="number">26</td>
+                <td class="name">Rainbow Roll</td>
+                <td class="description">Rulle i 10 bitar med: Avokado, gurka, surimi<br>Toppping: lax, tonfisk, avokado, räka, masago, sesamfrön, mangosås, majo/chilimajo</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">27</td>
+                <td class="name">Spicy Tonfisk Roll</td>
+                <td class="description">Rulle i 10 bitar med: Marinerad tonfisk, avokado, gurka, surimi<br>Topping: sesamfrön, masago, salladslök, teriyakisås, chilimajo</td>
+                <td class="price">155Kr</td>
+            </tr>
+            <tr>
+                <td class="number">28</td>
+                <td class="name">Tonfisk Roll</td>
+                <td class="description">Rulle i 10 bitar med: Tonfiskröra, avokado, gurka, surimi<br>Topping: sesamfrön, masago, salladslök, teriyakisås, majo</td>
+                <td class="price">160Kr</td>
+            </tr>
+            <tr>
+                <td class="number">29</td>
+                <td class="name">Tempura Roll</td>
+                <td class="description">Rulle i 10 bitar med: Tempura räkor, avokado, gurka<Br>Topping: sesamfrön, rostad lök, majo/chilimajo</td>
+                <td class="price">150Kr</td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td class="table_title" colspan="4">Varmrätter</td>
+            </tr>
+            <tr>
+                <td class="number">30</td>
+                <td class="name">Yakiniku</td>
+                <td class="description">Skivad biff med lök i teriyakisås, ris & sallad</td>
+                <td class="price">145Kr</td>
+            </tr>
+            <tr>
+                <td class="number">31</td>
+                <td class="name">Yakitori</td>
+                <td class="description">6 grillade hycklingsspett i teriyakisås, ris & sallad</td>
+                <td class="price">140Kr</td>
+            </tr>
+            <tr>
+                <td class="number">32</td>
+                <td class="name">Sushi Yakiniku</td>
+                <td class="description">3 nigiri & 3 maki, skivad biff med lök i teriyakisås, ris & sallad</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">33</td>
+                <td class="name">Sushi Yakitori</td>
+                <td class="description">3 nigiri & 3 maki, 4 grillade kycklingspett i teriyakisås, ris & sallad</td>
+                <td class="price">160Kr</td>
+            </tr>
+            <tr>
+                <td class="number">34</td>
+                <td class="name">Bento</td>
+                <td class="description">2 nigiri, 2 maki, 3 grillade kycklingspett, yakiniku, ris & sallad</td>
+                <td class="price">165Kr</td>
+            </tr>
+            <tr>
+                <td class="number">35</td>
+                <td class="name">Bibimbap</td>
+                <td class="description"> Biff/Kyckling/Vegetarisk & kimchi, grönsaker, stark gochujangsås, sesamfrön</td>
+                <td class="price">150Kr</td>
+            </tr>
+            <tr>
+                <td class="number">36</td>
+                <td class="name">Vårrullar</td>
+                <td class="description"> 10 st friterade vegetariska vårrullar med risk och sweet chilisås </td>
+                <td class="price">135Kr</td>
+            </tr>
+            <tr>
+                <td class="number">37</td>
+                <td class="name">Poké Bowl</td>
+                <td class="description">Välj mellan: Lax/tonfisk/tempura räkor/kyckling/yakiniku/tofu<br> Innehåll: Avokado, sallad, kål, edamame, inlagd ingefära, mango, ris.<br> Topping: Sesamfrön, masago, salladslök, teriyakisås<br> Välj mellan: Majo/chilimajo/mangosås </td>
+                <td class="price">150Kr</td>
+            </tr>
+            
+        </table>
+    </div>
+<div id="Info" class="tabcontent">
+    <table id="opening_hours">
+        <tr>
+            <th class="table_title" colspan="2">Öppettider</th>
+        </tr>
+        <tr>
+            <td>Måndag - Fredag</td>
+            <td>11:00 - 22:00</td>
+        </tr>
+        <tr>
+            <td>Lördag - Söndag</td>
+            <td>11:00 - 18:00</td>
+        </tr><tr>
+            <td>*Julafton, Juldagen & Midsommarafton</td>
+            <td>Stängt</td>
+        </tr>
+        <tr>
+            <td>*Övriga Helgdagar</td>
+            <td>11:00 - 22:00</td>
+        </tr>
+
+    </table>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1018.2474433392521!2d18.073636191377684!3d59.307992835170936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465f77f6a66d0ef5%3A0x6a59c7d0ac674c7b!2sRingv%C3%A4gen%20115%2C%20118%2060%20Stockholm!5e0!3m2!1sen!2sse!4v1764618168879!5m2!1sen!2sse" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+</div>
+</div>
+
+
+</body>
+</html>
